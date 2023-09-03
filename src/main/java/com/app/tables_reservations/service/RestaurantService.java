@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RestaurantService {
-    private RestaurantRepository restaurantRepository;
+    private final RestaurantRepository restaurantRepository;
 
     public List<Restaurant> getAllReservations() { return restaurantRepository.findAll(); }
 

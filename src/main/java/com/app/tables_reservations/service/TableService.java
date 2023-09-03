@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TableService {
-    private TableRepository tableRepository;
+    private final TableRepository tableRepository;
 
     public List<Table> getAllTables() { return tableRepository.findAll(); }
 

@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
-    private ReservationRepository reservationRepository;
+    private final ReservationRepository reservationRepository;
 
     public List<Reservation> getAllReservations() { return reservationRepository.findAll(); }
 

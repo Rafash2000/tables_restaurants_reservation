@@ -10,7 +10,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
     public List<Customer> getAllCustomers() { return customerRepository.findAll(); }
 
