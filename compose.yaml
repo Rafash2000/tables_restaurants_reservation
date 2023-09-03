@@ -1,0 +1,21 @@
+services:
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./create_tables.sql:/docker-entrypoint-initdb.d/create.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: db_1
+      MYSQL_USER: user
+      MYSQL_PASSWORD: p@ssword123
+      MYSQL_TCP_PORT: 3307
+    ports:
+      - "3307:3307"
+    expose:
+      - "3307"
+
+volumes:
+  mysql:
