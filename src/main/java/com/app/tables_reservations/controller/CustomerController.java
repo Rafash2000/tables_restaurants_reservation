@@ -37,7 +37,7 @@ public class CustomerController {
     }
 
     @PostMapping("/addCustomer")
-    public ResponseEntity<Customer> addCustomer(Customer customer) {
+    public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer) {
         try {
             return ResponseEntity.ok(customerService.addCustomer(customer));
         } catch (DataAccessException exception) {

@@ -15,6 +15,7 @@ public class Table {
     private Long id;
     private int number;
     private int capacity;
+    @Enumerated(EnumType.STRING)
     private Availability availability;
     @ManyToOne
     @JoinColumn(name = "restaurant_id")

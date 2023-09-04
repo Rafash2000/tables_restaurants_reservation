@@ -14,9 +14,9 @@ import java.util.List;
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
-    public List<Restaurant> getAllReservations() { return restaurantRepository.findAll(); }
+    public List<Restaurant> getAllRestaurants() { return restaurantRepository.findAll(); }
 
-    public Restaurant getCustomerById(Long id) { return restaurantRepository.findById(id).orElse(null); }
+    public Restaurant getRestaurantById(Long id) { return restaurantRepository.findById(id).orElse(null); }
 
     public Restaurant addRestaurant(Restaurant restaurant) { return restaurantRepository.save(restaurant); }
 
