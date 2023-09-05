@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS tables (
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         number INT NOT NULL,
                         capacity INT NOT NULL,
+                        date DATETIME NOT NULL,
                         availability ENUM('available', 'reserved') NOT NULL,
                         restaurant_id INT,
                         FOREIGN KEY (restaurant_id) REFERENCES restaurants(id)
@@ -31,9 +32,7 @@ CREATE TABLE IF NOT EXISTS customers (
 -- Creating the "Reservations" table with "start_time" and "end_time" columns
 CREATE TABLE IF NOT EXISTS reservations (
                               id INT AUTO_INCREMENT PRIMARY KEY,
-                              date DATE NOT NULL,
-                              start_time TIME NOT NULL,
-                              end_time TIME NOT NULL,
+                              date DATETIME NOT NULL,
                               number_of_people INT NOT NULL,
                               status ENUM('confirmed', 'canceled') NOT NULL,
                               restaurant_id INT,

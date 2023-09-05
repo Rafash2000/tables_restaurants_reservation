@@ -2,6 +2,9 @@ package com.app.tables_reservations.controller;
 
 import com.app.tables_reservations.model.Customer;
 import com.app.tables_reservations.model.Reservation;
+import com.app.tables_reservations.model.Table;
+import com.app.tables_reservations.model.enums.Availability;
+import com.app.tables_reservations.model.enums.Status;
 import com.app.tables_reservations.service.CustomerService;
 import com.app.tables_reservations.service.ReservationService;
 import com.app.tables_reservations.service.RestaurantService;
@@ -11,6 +14,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.*;
 import java.util.List;
 
 @RestController
@@ -46,18 +50,34 @@ public class ReservationController {
         }
     }
 
-    @PostMapping("/addReservation/{restaurantId}/{tableId}/{customerId}")
+    @PostMapping("/addReservation/{restaurantId}/{customerId}/{numberOfPeople}/{date}")
     public ResponseEntity<Reservation> addReservation(
-            @RequestBody Reservation reservation, @PathVariable Long restaurantId,
-            @PathVariable Long tableId, @PathVariable Long customerId) {
+            @PathVariable Long restaurantId,
+            @PathVariable Long customerId,
+            @PathVariable int numberOfPeople,
+            @PathVariable LocalDateTime date) {
         try {
-            if (!(reservationService.existReservation(restaurantId) || tableService.existTable(tableId)
-                || customerService.existCustomer(customerId))) {
-                reservation.setCustomer(customerService.getCustomerById(customerId));
-                reservation.setRestaurant(restaurantService.getRestaurantById(restaurantId));
-                reservation.setTable(tableService.getTableById(tableId));
+            if (!(reservationService.existReservation(restaurantId)
+                    || customerService.existCustomer(customerId))) {
                 return ResponseEntity.notFound().build();
             }
+
+            var freeTables = tableService.findFreeTable(restaurantId, date, numberOfPeople);
+
+            if (freeTables.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            var table = freeTables.get(0);
+
+            var reservation = reservationService.reserveTable(
+                    table,
+                    restaurantService.getRestaurantById(restaurantId),
+                    customerService.getCustomerById(customerId),
+                    numberOfPeople);
+
+            table.setAvailability(Availability.reserved);
+            tableService.save(table);
             return ResponseEntity.ok(reservationService.addReservation(reservation));
         } catch (DataAccessException exception) {
             return ResponseEntity.internalServerError().build();

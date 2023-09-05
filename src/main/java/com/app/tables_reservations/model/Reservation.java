@@ -5,24 +5,21 @@ import com.app.tables_reservations.model.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity(name = "Reservations")
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate date;
-    @JsonDeserialize(using = CustomLocalTimeDeserializer.class)
-    private LocalTime startTime;
-    @JsonDeserialize(using = CustomLocalTimeDeserializer.class)
-    private LocalTime endTime;
+    private LocalDateTime date;
     private int numberOfPeople;
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -38,4 +35,13 @@ public class Reservation {
     @JoinColumn(name = "table_id")
     @JsonIgnore
     private Table table;
+
+    public Reservation(LocalDateTime date, int numberOfPeople, Status status, Restaurant restaurant, Customer customer, Table table) {
+        this.date = date;
+        this.numberOfPeople = numberOfPeople;
+        this.status = status;
+        this.restaurant = restaurant;
+        this.customer = customer;
+        this.table = table;
+    }
 }
