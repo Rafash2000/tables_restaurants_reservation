@@ -1,30 +1,69 @@
 package com.app.tables_reservations.controller;
 
-import com.app.tables_reservations.model.Customer;
 import com.app.tables_reservations.model.Restaurant;
+import com.app.tables_reservations.model.dto.CreateRestaurantDto;
+import com.app.tables_reservations.model.dto.GetRestaurantDto;
 import com.app.tables_reservations.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/restaurants")
+@CrossOrigin
 public class RestaurantController {
     private final RestaurantService restaurantService;
 
     @GetMapping
-    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
+    public ResponseEntity<List<GetRestaurantDto>> getAllRestaurants() {
         try {
-            return ResponseEntity.ok(restaurantService.getAllRestaurants());
+            var restaurants = restaurantService
+                    .getAllRestaurants()
+                    .stream()
+                    .map(Restaurant::getRestaurantDto)
+                    .toList();
+            return ResponseEntity.ok(restaurants);
         } catch (DataAccessException exception) {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @GetMapping("/new")
+    public ResponseEntity<List<GetRestaurantDto>> getNewRestaurants() {
+        try {
+            var restaurants = restaurantService
+                    .getAllRestaurants()
+                    .stream()
+                    .sorted(Comparator.comparing(Restaurant::getId)
+                            .reversed())
+                    .limit(5)
+                    .map(Restaurant::getRestaurantDto)
+                    .toList();
+            return ResponseEntity.ok(restaurants);
+        } catch (DataAccessException exception) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/recommend")
+    public ResponseEntity<List<GetRestaurantDto>> getRecommendedRestaurants() {
+        try {
+            var restaurantDto = restaurantService.getRestaurantById(1L).getRestaurantDto();
+
+            var restaurantsTopList = List.of(restaurantDto);
+
+            return ResponseEntity.ok(restaurantsTopList);
+        } catch (DataAccessException exception) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Restaurant> getRestaurantById(@PathVariable Long id) {
@@ -38,13 +77,10 @@ public class RestaurantController {
         }
     }
 
-    @PostMapping("/addRestaurant")
-    public ResponseEntity<Restaurant> addRestaurant(@RequestBody Restaurant restaurant) {
+    @PostMapping("/create")
+    public ResponseEntity<Restaurant> addRestaurant(@RequestBody CreateRestaurantDto createRestaurantDto) {
         try {
-            System.out.println(restaurant.getOpeningTime());
-            restaurant.setOpeningTime(restaurant.getOpeningTime().truncatedTo(ChronoUnit.MINUTES));
-            restaurant.setClosingTime(restaurant.getClosingTime().truncatedTo(ChronoUnit.MINUTES));
-            return ResponseEntity.ok(restaurantService.addRestaurant(restaurant));
+            return ResponseEntity.ok(restaurantService.addRestaurant(createRestaurantDto.toRestaurant()));
         } catch (DataAccessException exception) {
             return ResponseEntity.internalServerError().build();
         }

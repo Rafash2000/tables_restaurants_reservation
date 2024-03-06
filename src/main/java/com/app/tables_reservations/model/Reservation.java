@@ -1,19 +1,18 @@
 package com.app.tables_reservations.model;
 
-import com.app.tables_reservations.jsonDeserializer.CustomLocalTimeDeserializer;
+import com.app.tables_reservations.model.dto.GetReservationDto;
 import com.app.tables_reservations.model.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
+@AllArgsConstructor
 @Entity(name = "Reservations")
 public class Reservation {
     @Id
@@ -28,20 +27,24 @@ public class Reservation {
     @JsonIgnore
     private Restaurant restaurant;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    @JsonIgnore
-    private Customer customer;
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "table_id")
     @JsonIgnore
     private Table table;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
-    public Reservation(LocalDateTime date, int numberOfPeople, Status status, Restaurant restaurant, Customer customer, Table table) {
+    public Reservation(LocalDateTime date, int numberOfPeople, Status status, Restaurant restaurant, Table table, User user) {
         this.date = date;
         this.numberOfPeople = numberOfPeople;
         this.status = status;
         this.restaurant = restaurant;
-        this.customer = customer;
         this.table = table;
+        this.user = user;
+    }
+
+    public GetReservationDto getReservationDto(){
+        return new GetReservationDto(id, date.toLocalDate(), date.toLocalTime(), numberOfPeople, status, table.getNumber(), user.getEmail());
     }
 }

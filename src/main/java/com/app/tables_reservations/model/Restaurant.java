@@ -1,18 +1,19 @@
 package com.app.tables_reservations.model;
 
 import com.app.tables_reservations.jsonDeserializer.CustomLocalTimeDeserializer;
+import com.app.tables_reservations.model.dto.GetRestaurantDto;
+import com.app.tables_reservations.model.dto.UpdateRestaurantDto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalTime;
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "Restaurants")
 public class Restaurant {
     @Id
@@ -26,4 +27,37 @@ public class Restaurant {
     private LocalTime openingTime;
     @JsonDeserialize(using = CustomLocalTimeDeserializer.class)
     private LocalTime closingTime;
+    private boolean available;
+
+    public Restaurant(Long id, String city, String address, String phone, LocalTime openingTime, LocalTime closingTime) {
+        this.id = id;
+        this.name = name;
+        this.city = city;
+        this.address = address;
+        this.phone = phone;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
+    }
+
+    public Restaurant(String name, String city, String address, String phone, LocalTime openingTime, LocalTime closingTime) {
+        this.name = name;
+        this.city = city;
+        this.address = address;
+        this.phone = phone;
+        this.openingTime = openingTime;
+        this.closingTime = closingTime;
+    }
+
+    public GetRestaurantDto getRestaurantDto() {
+        return new GetRestaurantDto(id, name, city, address, phone, String.format(openingTime.toString()+ " - " + closingTime.toString()));
+    }
+
+    public void update(UpdateRestaurantDto restaurantDto) {
+        this.name = restaurantDto.name();
+        this.city = restaurantDto.city();
+        this.address = restaurantDto.address();
+        this.phone = restaurantDto.phone();
+        this.openingTime = restaurantDto.openingTime();
+        this.closingTime = restaurantDto.closingTime();
+    }
 }

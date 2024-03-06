@@ -1,8 +1,6 @@
 package com.app.tables_reservations.service;
 
-import com.app.tables_reservations.model.Reservation;
 import com.app.tables_reservations.model.Restaurant;
-import com.app.tables_reservations.repository.ReservationRepository;
 import com.app.tables_reservations.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,12 @@ import java.util.List;
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
 
-    public List<Restaurant> getAllRestaurants() { return restaurantRepository.findAll(); }
+    public List<Restaurant> getAllRestaurants() {
+        return restaurantRepository.findAll()
+                .stream()
+                .filter(Restaurant::isAvailable)
+                .toList();
+    }
 
     public Restaurant getRestaurantById(Long id) { return restaurantRepository.findById(id).orElse(null); }
 
@@ -23,4 +26,8 @@ public class RestaurantService {
     public boolean existRestaurant(Long id) { return restaurantRepository.existsById(id); }
 
     public void deleteRestaurant(Long id) { restaurantRepository.deleteById(id); }
+
+    public Restaurant updateRestaurant(Restaurant restaurant) {
+        return restaurantRepository.save(restaurant);
+    }
 }

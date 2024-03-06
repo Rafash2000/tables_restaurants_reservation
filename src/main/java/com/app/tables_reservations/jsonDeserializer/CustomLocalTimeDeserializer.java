@@ -14,8 +14,8 @@ public class CustomLocalTimeDeserializer extends JsonDeserializer<LocalTime> {
     @Override
     public LocalTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JacksonException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        int hour = node.get("hour").asInt();
-        int minute = node.get("minute").asInt();
+        var hour = node.get("hour").asInt();
+        var minute = node.get("minute").asInt();
 
         return LocalTime.of(hour, minute);
     }
